@@ -1,0 +1,118 @@
+.reviews-blurred-container {
+  position: relative;
+  width: 100%;
+  overflow: hidden;
+  border-radius: var(--radius-lg);
+}
+
+.blurred-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-lg);
+  padding: 4px;
+}
+
+.blurred-card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+  border-color: rgba(148, 163, 184, 0.05);
+}
+
+.blurred-card-header {
+  display: flex;
+  justify-content: space-between;
+}
+
+.blurred-meta {
+  width: 120px;
+  height: 16px;
+  background: var(--color-bg-input);
+  border-radius: var(--radius-sm);
+}
+
+.blurred-rating {
+  width: 48px;
+  height: 16px;
+  background: var(--color-bg-input);
+  border-radius: var(--radius-sm);
+}
+
+.blurred-line {
+  height: 14px;
+  background: var(--color-bg-input);
+  border-radius: var(--radius-sm);
+}
+
+.blurred-line.title {
+  width: 200px;
+}
+
+.blurred-line.content.short {
+  width: 60%;
+}
+
+.blurred-line.content.medium {
+  width: 80%;
+}
+
+.blurred-line.content.long {
+  width: 95%;
+}
+
+.blurred-line.footer {
+  width: 150px;
+  height: 24px;
+}
+
+.lock-overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(10, 14, 26, 0.4);
+  padding: var(--space-lg);
+}
+
+.lock-card {
+  max-width: 420px;
+  width: 100%;
+  padding: var(--space-2xl);
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-md);
+  box-shadow: var(--shadow-lg);
+}
+
+.lock-icon-wrapper {
+  width: 56px;
+  height: 56px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-xl);
+  background: var(--color-accent-light);
+  color: var(--color-accent);
+  font-size: 24px;
+  margin-bottom: var(--space-xs);
+}
+
+.lock-title {
+  font-size: var(--font-size-lg);
+  font-weight: 800;
+  letter-spacing: -0.01em;
+}
+
+.lock-desc {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+  line-height: 1.5;
+}
+
+.lock-card .btn {
+  width: 100%;
+  margin-top: var(--space-sm);
+}

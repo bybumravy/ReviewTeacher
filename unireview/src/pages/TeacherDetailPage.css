@@ -1,0 +1,111 @@
+.teacher-profile-header {
+  display: flex;
+  align-items: center;
+  gap: var(--space-xl);
+  margin-bottom: var(--space-2xl);
+  padding: var(--space-xl);
+}
+
+.teacher-profile-avatar {
+  width: 80px;
+  height: 80px;
+  border-radius: var(--radius-lg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: var(--font-size-3xl);
+  font-weight: 800;
+  color: var(--color-text-primary);
+}
+
+.teacher-profile-info {
+  flex: 1;
+}
+
+.teacher-profile-name {
+  font-size: var(--font-size-2xl);
+  font-weight: 850;
+  letter-spacing: -0.02em;
+  line-height: 1.2;
+  margin-bottom: var(--space-xs);
+}
+
+.teacher-profile-sub {
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-sm);
+  margin-bottom: var(--space-sm);
+}
+
+.teacher-profile-stats {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+}
+
+.profile-stat {
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
+}
+
+.profile-stat-divider {
+  width: 1px;
+  height: 16px;
+  background: var(--color-border);
+}
+
+.teacher-detail-grid {
+  display: grid;
+  grid-template-columns: 0.8fr 1.2fr;
+  gap: var(--space-2xl);
+}
+
+.teacher-detail-reviews-col {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-lg);
+}
+
+.reviews-section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.reviews-section-title {
+  font-size: var(--font-size-xl);
+  font-weight: 800;
+  letter-spacing: -0.01em;
+}
+
+.reviews-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-lg);
+}
+
+@media (max-width: 1024px) {
+  .teacher-detail-grid {
+    grid-template-columns: 1fr;
+    gap: var(--space-2xl);
+  }
+}
+
+@media (max-width: 768px) {
+  .teacher-profile-header {
+    flex-direction: column;
+    text-align: center;
+    align-items: center;
+  }
+  .teacher-profile-stats {
+    justify-content: center;
+  }
+  .teacher-profile-actions {
+    width: 100%;
+  }
+  .teacher-profile-actions .btn {
+    width: 100%;
+  }
+}

@@ -1,0 +1,80 @@
+.gate-modal {
+  text-align: center;
+}
+
+.gate-modal-icon {
+  width: 64px;
+  height: 64px;
+  margin: 0 auto var(--space-lg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-xl);
+  background: var(--color-accent-light);
+  color: var(--color-accent);
+  font-size: 28px;
+}
+
+.gate-modal-title {
+  font-size: var(--font-size-2xl);
+  font-weight: 800;
+  margin-bottom: var(--space-sm);
+}
+
+.gate-modal-desc {
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-sm);
+  margin-bottom: var(--space-xl);
+  line-height: 1.6;
+}
+
+.gate-modal-steps {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+  text-align: left;
+  margin-bottom: var(--space-xl);
+}
+
+.gate-step {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-md);
+  padding: var(--space-md);
+  background: var(--color-bg-input);
+  border-radius: var(--radius-md);
+}
+
+.gate-step-num {
+  min-width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-full);
+  background: var(--color-accent-gradient);
+  color: white;
+  font-weight: 700;
+  font-size: var(--font-size-sm);
+}
+
+.gate-step strong {
+  display: block;
+  font-size: var(--font-size-sm);
+  margin-bottom: 2px;
+}
+
+.gate-step p {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-muted);
+}
+
+.gate-modal-actions {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+}
+
+.gate-modal-actions .btn-lg {
+  width: 100%;
+}

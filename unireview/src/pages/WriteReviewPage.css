@@ -1,0 +1,40 @@
+.write-review-header {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-sm);
+}
+
+.back-btn {
+  margin-left: -12px;
+}
+
+.write-title {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+}
+
+.write-review-content {
+  max-width: 720px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xl);
+}
+
+.teacher-select-group {
+  padding-bottom: var(--space-lg);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.select-prompt {
+  text-align: center;
+  color: var(--color-text-muted);
+  font-size: var(--font-size-sm);
+  padding: var(--space-2xl) 0;
+}
+
+.form-wrapper {
+  animation: slideUp var(--transition-base) ease;
+}
