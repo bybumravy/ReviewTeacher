@@ -17,12 +17,15 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
 public class ReviewService {
+
+    private static final int MAX_REVIEWS_PER_IP_PER_DAY = 3;
 
     private final ReviewRepository reviewRepository;
     private final TeacherRepository teacherRepository;
@@ -41,20 +44,28 @@ public class ReviewService {
             throw new CaptchaFailedException("Xác thực reCAPTCHA không thành công");
         }
 
-        // 2. Fetch Teacher
+        // 2. Rate limit by IP (max 3 reviews/day)
+        if (clientIp != null) {
+            int recentCount = reviewRepository.countByIpHashAndCreatedAtAfter(clientIp, LocalDateTime.now().minusDays(1));
+            if (recentCount >= MAX_REVIEWS_PER_IP_PER_DAY) {
+                throw new RateLimitExceededException("Bạn đã gửi quá " + MAX_REVIEWS_PER_IP_PER_DAY + " review trong hôm nay, vui lòng thử lại vào ngày mai.");
+            }
+        }
+
+        // 3. Fetch Teacher
         Teacher teacher = teacherRepository.findById(req.getTeacherId())
                 .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy giảng viên ID: " + req.getTeacherId()));
 
-        // 3. Ensure Reviewer Entity exists
+        // 4. Ensure Reviewer Entity exists
         Reviewer reviewer = gateService.getOrCreateReviewer(reviewerToken, clientIp);
         String finalToken = reviewer.getToken();
 
-        // 4. Check duplicate review
+        // 5. Check duplicate review
         if (reviewRepository.existsByReviewerTokenAndTeacherId(finalToken, req.getTeacherId())) {
             throw new DuplicateReviewException("Bạn đã gửi đánh giá cho giảng viên này rồi");
         }
 
-        // 5. Evaluate content (AI Moderation)
+        // 6. Evaluate content (AI Moderation)
         ModerationService.ModerationResult modResult = moderationService.evaluateContent(req.getContent());
 
         if (modResult.status() == ReviewStatus.REJECTED) {
@@ -112,7 +123,7 @@ public class ReviewService {
                 .build();
     }
 
-    @Transactional(readOnly = true)
+    @Transactional
     public List<ReviewResponse> getReviewsForTeacher(Long teacherId, String reviewerToken) {
         // Gate check
         gateService.checkAndUnlockTeacher(reviewerToken, teacherId);
@@ -125,6 +136,10 @@ public class ReviewService {
 
     @Transactional
     public void voteReview(Long reviewId, VoteRequest req, String voterToken) {
+        if (voterToken == null || voterToken.isBlank()) {
+            throw new NoReviewerTokenException("Cần có định danh người dùng để bình chọn");
+        }
+
         Review review = reviewRepository.findById(reviewId)
                 .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy review ID: " + reviewId));
 
@@ -164,12 +179,17 @@ public class ReviewService {
     }
 
     @Transactional
-    public void reportReview(Long reviewId, ReportRequest req) {
+    public void reportReview(Long reviewId, ReportRequest req, String reporterToken) {
+        if (reporterToken == null || reporterToken.isBlank()) {
+            throw new NoReviewerTokenException("Cần có định danh người dùng để báo cáo");
+        }
+
         Review review = reviewRepository.findById(reviewId)
                 .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy review ID: " + reviewId));
 
         ReviewReport report = ReviewReport.builder()
                 .review(review)
+                .reporterToken(reporterToken)
                 .reason(req.getReason())
                 .description(req.getDescription())
                 .status(ReportStatus.PENDING)

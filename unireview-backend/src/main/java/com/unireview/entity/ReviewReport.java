@@ -24,6 +24,9 @@ public class ReviewReport {
     @JoinColumn(name = "review_id", nullable = false)
     private Review review;
 
+    @Column(name = "reporter_token", nullable = false, length = 50)
+    private String reporterToken;
+
     @Column(nullable = false, length = 100)
     private String reason;
 

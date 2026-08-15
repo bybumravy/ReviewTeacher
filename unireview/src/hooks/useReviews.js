@@ -1,53 +1,41 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { getTeacherReviews } from '../api/teacherApi';
-import { MOCK_REVIEWS } from '../api/mockData';
 import { useGate } from './useGate';
-import toast from 'react-hot-toast';
+
+const LOCKED_ERROR_CODES = new Set(['INSUFFICIENT_CREDIT', 'NO_REVIEWER_TOKEN']);
 
 export function useReviews(teacherId) {
   const [reviews, setReviews] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const { isUnlocked, hasCredit, spendCredit } = useGate();
+  const [locked, setLocked] = useState(false);
+  const { refresh } = useGate();
 
   const fetchReviews = useCallback(async () => {
     if (!teacherId) return;
     setLoading(true);
     setError(null);
+    setLocked(false);
     try {
-      const unlocked = isUnlocked(Number(teacherId));
-
-      if (!unlocked) {
-        // If not unlocked and has credit, let's auto-spend credit to unlock
-        if (hasCredit) {
-          spendCredit(Number(teacherId));
-          toast.success('Đã tự động sử dụng 1 credit để mở khóa reviews! 🔓');
-        } else {
-          // Locked and no credit
-          setReviews([]);
-          setLoading(false);
-          return;
-        }
-      }
-
-      // In production:
-      // const data = await getTeacherReviews(teacherId);
-      // setReviews(data);
-
-      // Offline mock data
-      const mockReviews = MOCK_REVIEWS[Number(teacherId)] || [];
-      await new Promise(resolve => setTimeout(resolve, 200));
-      setReviews(mockReviews);
+      const data = await getTeacherReviews(teacherId);
+      setReviews(data);
+      await refresh();
     } catch (err) {
-      setError(err.message || 'Không thể tải reviews');
+      if (LOCKED_ERROR_CODES.has(err.code)) {
+        setLocked(true);
+        setReviews([]);
+      } else {
+        setError(err);
+        setReviews([]);
+      }
     } finally {
       setLoading(false);
     }
-  }, [teacherId, isUnlocked, hasCredit, spendCredit]);
+  }, [teacherId, refresh]);
 
   useEffect(() => {
     fetchReviews();
   }, [fetchReviews]);
 
-  return { reviews, loading, error, refetch: fetchReviews };
+  return { reviews, loading, error, locked, refetch: fetchReviews };
 }

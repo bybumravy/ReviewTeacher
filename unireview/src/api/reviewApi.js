@@ -5,12 +5,12 @@ export async function submitReview(reviewData) {
   return data;
 }
 
-export async function voteReview(reviewId, voteType) {
-  const { data } = await api.post(`/reviews/${reviewId}/vote`, { voteType });
+export async function voteReview(reviewId, voteType, captchaToken) {
+  const { data } = await api.post(`/reviews/${reviewId}/vote`, { voteType, captchaToken });
   return data;
 }
 
-export async function reportReview(reviewId, reason, description) {
-  const { data } = await api.post(`/reviews/${reviewId}/report`, { reason, description });
+export async function reportReview(reviewId, reason, description, captchaToken) {
+  const { data } = await api.post(`/reviews/${reviewId}/report`, { reason, description, captchaToken });
   return data;
 }

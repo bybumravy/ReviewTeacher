@@ -2,36 +2,59 @@ import { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useTeacherDetails } from '../hooks/useTeachers';
 import { useReviews } from '../hooks/useReviews';
-import { useGate } from '../hooks/useGate';
 import { FaStar } from 'react-icons/fa';
 import { FiMessageSquare, FiUnlock, FiLock, FiPlusCircle } from 'react-icons/fi';
 import MultiChoiceStats from '../components/teacher/MultiChoiceStats';
 import ReviewCard from '../components/review/ReviewCard';
 import ReviewBlurred from '../components/review/ReviewBlurred';
 import GateModal from '../components/review/GateModal';
+import ReportReviewModal from '../components/review/ReportReviewModal';
 import LoadingSpinner from '../components/common/LoadingSpinner';
 import EmptyState from '../components/common/EmptyState';
-import './TeacherDetailPage.css';
+import { voteReview, reportReview } from '../api/reviewApi';
+import { executeReCaptcha } from '../utils/recaptcha';
 import toast from 'react-hot-toast';
+import './TeacherDetailPage.css';
+
+const RECAPTCHA_SITE_KEY = import.meta.env.VITE_RECAPTCHA_SITE_KEY || '';
 
 export default function TeacherDetailPage() {
   const { id } = useParams();
   const navigate = useNavigate();
   const { teacher, loading: teacherLoading } = useTeacherDetails(id);
-  const { reviews, loading: reviewsLoading, refetch } = useReviews(id);
-  const { isUnlocked, hasCredit, spendCredit } = useGate();
+  const { reviews, loading: reviewsLoading, refetch, locked } = useReviews(id);
 
   const [showGateModal, setShowGateModal] = useState(false);
+  const [reportingReviewId, setReportingReviewId] = useState(null);
 
-  const unlocked = isUnlocked(Number(id));
+  const unlocked = !reviewsLoading && !locked;
 
+  // The gated GET /api/teachers/{id}/reviews call already attempted the
+  // credit-check/spend/unlock server-side (see useReviews). Reaching this
+  // handler means that attempt already failed (locked === true), so all we
+  // can do is guide the student to earn a credit — no further server call.
   const handleUnlockClick = () => {
-    if (hasCredit) {
-      spendCredit(Number(id));
-      toast.success('Mở khóa thành công! 🔓');
+    setShowGateModal(true);
+  };
+
+  const handleVote = async (reviewId, voteType) => {
+    try {
+      const captchaToken = await executeReCaptcha(RECAPTCHA_SITE_KEY, 'vote_review');
+      await voteReview(reviewId, voteType, captchaToken);
       refetch();
-    } else {
-      setShowGateModal(true);
+    } catch (err) {
+      toast.error(err.message || 'Không thể bình chọn. Vui lòng thử lại.');
+    }
+  };
+
+  const handleReportSubmit = async ({ reason, description }) => {
+    try {
+      const captchaToken = await executeReCaptcha(RECAPTCHA_SITE_KEY, 'report_review');
+      await reportReview(reportingReviewId, reason, description, captchaToken);
+      toast.success('Đã gửi báo cáo. Cảm ơn bạn đã phản hồi!');
+      setReportingReviewId(null);
+    } catch (err) {
+      toast.error(err.message || 'Không thể gửi báo cáo. Vui lòng thử lại.');
     }
   };
 
@@ -116,7 +139,12 @@ export default function TeacherDetailPage() {
             ) : (
               <div className="reviews-list">
                 {reviews.map(review => (
-                  <ReviewCard key={review.id} review={review} />
+                  <ReviewCard
+                    key={review.id}
+                    review={review}
+                    onVote={handleVote}
+                    onReport={(reviewId) => setReportingReviewId(reviewId)}
+                  />
                 ))}
               </div>
             )
@@ -134,6 +162,14 @@ export default function TeacherDetailPage() {
         <GateModal
           teacherName={teacher.fullName}
           onClose={() => setShowGateModal(false)}
+        />
+      )}
+
+      {/* Report Review Modal */}
+      {reportingReviewId && (
+        <ReportReviewModal
+          onClose={() => setReportingReviewId(null)}
+          onSubmit={handleReportSubmit}
         />
       )}
     </div>

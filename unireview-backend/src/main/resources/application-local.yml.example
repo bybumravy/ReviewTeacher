@@ -1,0 +1,25 @@
+# Copy this file to application-local.yml (same folder), fill in real values,
+# then run with the "local" profile active. application-local.yml is
+# gitignored — it will NEVER be committed, so real secrets stay off GitHub.
+#
+# Run with this profile active:
+#   PowerShell:  $env:SPRING_PROFILES_ACTIVE = "local"; .\mvnw.cmd spring-boot:run
+#   Or pass it inline:  .\mvnw.cmd spring-boot:run -Dspring-boot.run.profiles=local
+#
+# Spring Boot merges this file OVER application.yml, so you only need to
+# list the keys you're actually overriding — everything else keeps its
+# default from application.yml.
+
+spring:
+  datasource:
+    password: REPLACE_WITH_REAL_DB_PASSWORD
+
+jwt:
+  secret: REPLACE_WITH_A_LONG_RANDOM_BASE64_STRING
+
+app:
+  moderation:
+    perspective-api-key: REPLACE_WITH_REAL_PERSPECTIVE_API_KEY
+  captcha:
+    secret-key: REPLACE_WITH_REAL_RECAPTCHA_SECRET_KEY
+    enabled: true # flip on once you have a real key — false bypasses verification entirely

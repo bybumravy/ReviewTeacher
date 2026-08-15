@@ -8,4 +8,6 @@ import lombok.Data;
 public class VoteRequest {
     @NotNull
     private VoteType voteType;
+
+    private String captchaToken;
 }

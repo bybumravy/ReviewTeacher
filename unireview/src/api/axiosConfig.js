@@ -18,14 +18,20 @@ api.interceptors.request.use((config) => {
   return config;
 });
 
+// Fallback copy for error codes where the backend message might not be present/friendly
+const ERROR_CODE_MESSAGES = {
+  RATE_LIMIT_EXCEEDED: 'Bạn đã gửi quá nhiều review hôm nay. Vui lòng thử lại vào ngày mai.',
+};
+
 // Global error handler
 api.interceptors.response.use(
   (response) => response,
   (error) => {
-    const message = error.response?.data?.message || 'Đã xảy ra lỗi. Vui lòng thử lại.';
+    const code = error.response?.data?.error;
+    const message = error.response?.data?.message || ERROR_CODE_MESSAGES[code] || 'Đã xảy ra lỗi. Vui lòng thử lại.';
     const errorData = {
       status: error.response?.status,
-      code: error.response?.data?.error,
+      code,
       message,
     };
     return Promise.reject(errorData);

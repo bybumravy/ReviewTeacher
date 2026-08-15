@@ -6,6 +6,10 @@ import HomePage from './pages/HomePage';
 import TeacherListPage from './pages/TeacherListPage';
 import TeacherDetailPage from './pages/TeacherDetailPage';
 import WriteReviewPage from './pages/WriteReviewPage';
+import AdminLoginPage from './pages/admin/AdminLoginPage';
+import AdminModerationQueuePage from './pages/admin/AdminModerationQueuePage';
+import AdminRosterImportPage from './pages/admin/AdminRosterImportPage';
+import ProtectedAdminRoute from './components/admin/ProtectedAdminRoute';
 
 export default function App() {
   return (
@@ -17,6 +21,11 @@ export default function App() {
             <Route path="teachers" element={<TeacherListPage />} />
             <Route path="teachers/:id" element={<TeacherDetailPage />} />
             <Route path="write-review" element={<WriteReviewPage />} />
+          </Route>
+          <Route path="admin/login" element={<AdminLoginPage />} />
+          <Route element={<ProtectedAdminRoute />}>
+            <Route path="admin/queue" element={<AdminModerationQueuePage />} />
+            <Route path="admin/import" element={<AdminRosterImportPage />} />
           </Route>
         </Routes>
       </BrowserRouter>

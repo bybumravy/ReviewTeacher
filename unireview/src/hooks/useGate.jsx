@@ -1,9 +1,10 @@
 import { useState, useEffect, useCallback, createContext, useContext } from 'react';
 import { getReviewerToken } from '../utils/cookie';
+import { getGateStatus } from '../api/gateApi';
 
 const GateContext = createContext(null);
 
-const MOCK_GATE = {
+const EMPTY_GATE = {
   creditBalance: 0,
   pendingReviews: 0,
   totalReviews: 0,
@@ -11,29 +12,28 @@ const MOCK_GATE = {
 };
 
 export function GateProvider({ children }) {
-  const [gate, setGate] = useState(MOCK_GATE);
+  const [gate, setGate] = useState(EMPTY_GATE);
   const [loading, setLoading] = useState(true);
 
   const refresh = useCallback(async () => {
     const token = getReviewerToken();
     if (!token) {
-      setGate(MOCK_GATE);
+      setGate(EMPTY_GATE);
       setLoading(false);
       return;
     }
 
+    setLoading(true);
     try {
-      // In production, this calls the API:
-      // const data = await getGateStatus();
-      // setGate(data);
-
-      // For now, read from localStorage mock
-      const stored = localStorage.getItem('gate_status');
-      if (stored) {
-        setGate(JSON.parse(stored));
-      }
+      const data = await getGateStatus();
+      setGate({
+        creditBalance: data.creditBalance ?? 0,
+        pendingReviews: data.pendingReviews ?? 0,
+        totalReviews: data.totalReviews ?? 0,
+        unlockedTeacherIds: data.unlockedTeacherIds ?? [],
+      });
     } catch {
-      // Silent fail
+      // Silent fail — keep previous state, UI falls back gracefully
     } finally {
       setLoading(false);
     }
@@ -49,40 +49,8 @@ export function GateProvider({ children }) {
 
   const hasCredit = gate.creditBalance > 0;
 
-  const addCredit = useCallback((amount = 1) => {
-    setGate(prev => {
-      const updated = { ...prev, creditBalance: prev.creditBalance + amount };
-      localStorage.setItem('gate_status', JSON.stringify(updated));
-      return updated;
-    });
-  }, []);
-
-  const spendCredit = useCallback((teacherId) => {
-    setGate(prev => {
-      const updated = {
-        ...prev,
-        creditBalance: prev.creditBalance - 1,
-        unlockedTeacherIds: [...prev.unlockedTeacherIds, teacherId],
-      };
-      localStorage.setItem('gate_status', JSON.stringify(updated));
-      return updated;
-    });
-  }, []);
-
-  const unlockTeacher = useCallback((teacherId) => {
-    setGate(prev => {
-      if (prev.unlockedTeacherIds.includes(teacherId)) return prev;
-      const updated = {
-        ...prev,
-        unlockedTeacherIds: [...prev.unlockedTeacherIds, teacherId],
-      };
-      localStorage.setItem('gate_status', JSON.stringify(updated));
-      return updated;
-    });
-  }, []);
-
   return (
-    <GateContext.Provider value={{ gate, loading, refresh, isUnlocked, hasCredit, addCredit, spendCredit, unlockTeacher }}>
+    <GateContext.Provider value={{ gate, loading, refresh, isUnlocked, hasCredit }}>
       {children}
     </GateContext.Provider>
   );

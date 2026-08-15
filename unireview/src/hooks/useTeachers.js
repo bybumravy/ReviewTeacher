@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react';
 import { getTeachers, getTeacherById } from '../api/teacherApi';
-import { MOCK_TEACHERS } from '../api/mockData';
 
 export function useTeachers(filters = {}) {
   const [teachers, setTeachers] = useState([]);
@@ -10,42 +9,10 @@ export function useTeachers(filters = {}) {
   useEffect(() => {
     async function fetchData() {
       setLoading(true);
+      setError(null);
       try {
-        // In production:
-        // const data = await getTeachers(filters);
-        // setTeachers(data.content || data);
-
-        // Offline mock implementation of filters
-        let result = [...MOCK_TEACHERS];
-
-        if (filters.search) {
-          const query = filters.search.toLowerCase();
-          result = result.filter(t =>
-            t.fullName.toLowerCase().includes(query) ||
-            t.faculty.toLowerCase().includes(query) ||
-            (t.department && t.department.toLowerCase().includes(query))
-          );
-        }
-
-        if (filters.faculty) {
-          result = result.filter(t => t.faculty === filters.faculty);
-        }
-
-        if (filters.minRating) {
-          result = result.filter(t => t.avgRating >= Number(filters.minRating));
-        }
-
-        if (filters.sortBy) {
-          result.sort((a, b) => {
-            if (filters.sortBy === 'rating') return b.avgRating - a.avgRating;
-            if (filters.sortBy === 'reviews') return b.totalReviews - a.totalReviews;
-            return a.fullName.localeCompare(b.fullName);
-          });
-        }
-
-        // Simulate network delay
-        await new Promise(resolve => setTimeout(resolve, 300));
-        setTeachers(result);
+        const data = await getTeachers(filters);
+        setTeachers(data.content || data);
       } catch (err) {
         setError(err.message || 'Không thể tải danh sách giảng viên');
       } finally {
@@ -54,7 +21,7 @@ export function useTeachers(filters = {}) {
     }
 
     fetchData();
-  }, [filters.search, filters.faculty, filters.minRating, filters.sortBy]);
+  }, [filters.search, filters.faculty, filters.minRating, filters.sortBy, filters.sortDir]);
 
   return { teachers, loading, error };
 }
@@ -68,18 +35,12 @@ export function useTeacherDetails(id) {
     if (!id) return;
     async function fetchData() {
       setLoading(true);
+      setError(null);
       try {
-        // In production:
-        // const data = await getTeacherById(id);
-        // setTeacher(data);
-
-        const found = MOCK_TEACHERS.find(t => t.id === Number(id));
-        if (!found) throw new Error('Không tìm thấy giảng viên');
-
-        await new Promise(resolve => setTimeout(resolve, 200));
-        setTeacher(found);
+        const data = await getTeacherById(id);
+        setTeacher(data);
       } catch (err) {
-        setError(err.message);
+        setError(err.message || 'Không tìm thấy giảng viên');
       } finally {
         setLoading(false);
       }

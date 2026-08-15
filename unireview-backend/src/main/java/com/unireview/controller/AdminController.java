@@ -2,7 +2,9 @@ package com.unireview.controller;
 
 import com.unireview.dto.request.AdminLoginRequest;
 import com.unireview.dto.response.PagedResponse;
+import com.unireview.dto.response.ReportResponse;
 import com.unireview.dto.response.ReviewResponse;
+import com.unireview.enums.ReportStatus;
 import com.unireview.service.AdminService;
 import com.unireview.service.CsvImportService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -53,10 +55,39 @@ public class AdminController {
         return ResponseEntity.ok().build();
     }
 
+    @PutMapping("/reviews/{id}/hide")
+    @Operation(summary = "Hide a previously published review -> deducts author credit (if positive) and resolves related reports")
+    public ResponseEntity<Void> hideReview(@PathVariable Long id) {
+        adminService.hideReview(id);
+        return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/reports")
+    @Operation(summary = "Get list of student-submitted reports (default: PENDING)")
+    public ResponseEntity<PagedResponse<ReportResponse>> getReports(
+            @RequestParam(required = false) ReportStatus status,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size
+    ) {
+        return ResponseEntity.ok(adminService.getReports(status, page, size));
+    }
+
+    @PutMapping("/reports/{id}/dismiss")
+    @Operation(summary = "Dismiss a report without taking action on the underlying review")
+    public ResponseEntity<Void> dismissReport(@PathVariable Long id) {
+        adminService.dismissReport(id);
+        return ResponseEntity.ok().build();
+    }
+
     @PostMapping("/teachers/import-csv")
-    @Operation(summary = "Import teachers list from a CSV file")
+    @Operation(summary = "Import teachers list from a CSV file (upserts existing teachers by name+faculty)")
     public ResponseEntity<Map<String, Object>> importTeachersCsv(@RequestParam("file") MultipartFile file) throws Exception {
-        int count = csvImportService.importTeachersFromCsv(file);
-        return ResponseEntity.ok(Map.of("message", "Đã import thành công " + count + " giảng viên", "importedCount", count));
+        CsvImportService.ImportResult result = csvImportService.importTeachersFromCsv(file);
+        return ResponseEntity.ok(Map.of(
+                "message", "Đã import thành công " + result.importedCount() + " giảng viên mới, cập nhật " + result.updatedCount() + " giảng viên",
+                "importedCount", result.importedCount(),
+                "updatedCount", result.updatedCount(),
+                "failedRows", result.failedRows()
+        ));
     }
 }

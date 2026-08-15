@@ -4,8 +4,12 @@ import { FiSend, FiAlertCircle } from 'react-icons/fi';
 import StarRating from './StarRating';
 import { setReviewerToken } from '../../utils/cookie';
 import { useGate } from '../../hooks/useGate';
+import { submitReview } from '../../api/reviewApi';
+import { executeReCaptcha } from '../../utils/recaptcha';
 import toast from 'react-hot-toast';
 import './ReviewForm.css';
+
+const RECAPTCHA_SITE_KEY = import.meta.env.VITE_RECAPTCHA_SITE_KEY || '';
 
 const DIFFICULTY_OPTIONS = [
   { value: 'VERY_EASY', label: 'Rất dễ' },
@@ -48,7 +52,7 @@ const SEMESTERS = [
 
 export default function ReviewForm({ teacher, onSuccess }) {
   const navigate = useNavigate();
-  const { addCredit, unlockTeacher } = useGate();
+  const { refresh } = useGate();
 
   const [form, setForm] = useState({
     ratingOverall: 0,
@@ -100,20 +104,25 @@ export default function ReviewForm({ teacher, onSuccess }) {
 
     setSubmitting(true);
     try {
-      // In production: const data = await submitReview({ ...form, teacherId: teacher.id });
+      const captchaToken = await executeReCaptcha(RECAPTCHA_SITE_KEY, 'submit_review');
 
-      // Mock: simulate AI moderation pass
-      await new Promise(resolve => setTimeout(resolve, 1500));
+      const data = await submitReview({
+        ...form,
+        teacherId: teacher.id,
+        captchaToken,
+      });
 
-      // Generate and save reviewer token
-      const mockToken = 'rv_' + Math.random().toString(36).substring(2, 15);
-      setReviewerToken(mockToken);
+      if (data.reviewerToken) {
+        setReviewerToken(data.reviewerToken);
+      }
 
-      // Add credit and auto-unlock this teacher
-      addCredit(1);
-      unlockTeacher(teacher.id);
+      await refresh();
 
-      toast.success('Review đã được đăng! +1 credit 🎉', { duration: 4000 });
+      if (data.status === 'FLAGGED') {
+        toast('Review đang được kiểm duyệt. Credit sẽ được cộng sau khi xác nhận.', { icon: '⏳', duration: 5000 });
+      } else {
+        toast.success(data.message || 'Review đã được đăng! +1 credit 🎉', { duration: 4000 });
+      }
       onSuccess?.();
     } catch (err) {
       toast.error(err.message || 'Không thể gửi review. Vui lòng thử lại.');

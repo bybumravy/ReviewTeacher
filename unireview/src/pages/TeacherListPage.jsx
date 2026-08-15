@@ -10,7 +10,8 @@ export default function TeacherListPage() {
     search: '',
     faculty: '',
     minRating: '',
-    sortBy: 'name'
+    sortBy: 'name',
+    sortDir: 'asc'
   });
 
   const { teachers, loading } = useTeachers(filters);

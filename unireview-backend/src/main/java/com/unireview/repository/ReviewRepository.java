@@ -9,6 +9,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Repository
@@ -17,6 +18,8 @@ public interface ReviewRepository extends JpaRepository<Review, Long> {
     List<Review> findByTeacherIdAndStatusOrderByCreatedAtDesc(Long teacherId, ReviewStatus status);
 
     boolean existsByReviewerTokenAndTeacherId(String reviewerToken, Long teacherId);
+
+    int countByIpHashAndCreatedAtAfter(String ipHash, LocalDateTime cutoff);
 
     int countByReviewerTokenAndStatus(String reviewerToken, ReviewStatus status);
 

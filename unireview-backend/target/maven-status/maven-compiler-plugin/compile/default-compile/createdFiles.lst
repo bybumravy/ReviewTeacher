@@ -10,6 +10,7 @@ com\unireview\service\CsvImportService.class
 com\unireview\enums\VoteType.class
 com\unireview\entity\UnlockedTeacher.class
 com\unireview\service\TeacherService.class
+com\unireview\service\CsvImportService$FailedRow.class
 com\unireview\entity\ReviewReport.class
 com\unireview\repository\ReviewerRepository.class
 com\unireview\dto\response\ReviewResponse.class
@@ -21,6 +22,7 @@ com\unireview\repository\ReviewRepository.class
 com\unireview\controller\AdminController.class
 com\unireview\entity\Review.class
 com\unireview\service\AdminService.class
+com\unireview\dto\response\ReportResponse$ReportResponseBuilder.class
 com\unireview\entity\ReviewVote.class
 com\unireview\security\JwtTokenProvider.class
 com\unireview\exception\NoReviewerTokenException.class
@@ -46,6 +48,7 @@ com\unireview\security\AdminAuthFilter.class
 com\unireview\dto\response\PagedResponse$PagedResponseBuilder.class
 com\unireview\exception\ContentViolationException.class
 com\unireview\repository\ReviewVoteRepository.class
+com\unireview\service\CsvImportService$ImportResult.class
 com\unireview\service\ModerationService$ModerationResult.class
 com\unireview\UniReviewApplication.class
 com\unireview\entity\Subject.class
@@ -68,8 +71,11 @@ com\unireview\entity\Subject$SubjectBuilder.class
 com\unireview\controller\ReviewController.class
 com\unireview\entity\ReviewReport$ReviewReportBuilder.class
 com\unireview\enums\ReportStatus.class
+com\unireview\dto\response\ReportResponse.class
 com\unireview\service\ReviewService.class
+com\unireview\util\IpHashUtil.class
 com\unireview\entity\Teacher$TeacherBuilder.class
+com\unireview\exception\RateLimitExceededException.class
 com\unireview\repository\TeacherSubjectRepository.class
 com\unireview\dto\response\ErrorResponse.class
 com\unireview\dto\response\GateStatusResponse$GateStatusResponseBuilder.class

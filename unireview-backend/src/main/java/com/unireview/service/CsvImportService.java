@@ -23,34 +23,60 @@ public class CsvImportService {
     private final TeacherRepository teacherRepository;
 
     @Transactional
-    public int importTeachersFromCsv(MultipartFile file) throws Exception {
-        List<Teacher> teachers = new ArrayList<>();
+    public ImportResult importTeachersFromCsv(MultipartFile file) throws Exception {
+        int importedCount = 0;
+        int updatedCount = 0;
+        List<FailedRow> failedRows = new ArrayList<>();
 
         try (BufferedReader reader = new BufferedReader(new InputStreamReader(file.getInputStream(), StandardCharsets.UTF_8));
              CSVParser csvParser = new CSVParser(reader, CSVFormat.DEFAULT.builder().setHeader().setSkipHeaderRecord(true).setIgnoreHeaderCase(true).setTrim(true).build())) {
 
             for (CSVRecord record : csvParser) {
-                String fullName = record.get("full_name");
-                String title = record.isMapped("title") ? record.get("title") : "";
-                String faculty = record.get("faculty");
-                String department = record.isMapped("department") ? record.get("department") : "";
+                long rowNumber = record.getRecordNumber() + 1; // +1 to account for the header row
 
-                if (fullName != null && !fullName.isBlank() && faculty != null && !faculty.isBlank()) {
+                String fullName = record.isMapped("full_name") ? record.get("full_name") : null;
+                String faculty = record.isMapped("faculty") ? record.get("faculty") : null;
+                String title = record.isMapped("title") ? record.get("title") : "";
+                String department = record.isMapped("department") ? record.get("department") : "";
+                String avatarUrl = record.isMapped("avatar_url") ? record.get("avatar_url") : null;
+
+                if (fullName == null || fullName.isBlank()) {
+                    failedRows.add(new FailedRow((int) rowNumber, "Thiếu họ tên (full_name)"));
+                    continue;
+                }
+                if (faculty == null || faculty.isBlank()) {
+                    failedRows.add(new FailedRow((int) rowNumber, "Thiếu khoa (faculty)"));
+                    continue;
+                }
+
+                var existing = teacherRepository.findByFullNameIgnoreCaseAndFacultyIgnoreCase(fullName, faculty);
+                if (existing.isPresent()) {
+                    Teacher teacher = existing.get();
+                    teacher.setTitle(title);
+                    teacher.setDepartment(department);
+                    if (avatarUrl != null && !avatarUrl.isBlank()) {
+                        teacher.setAvatarUrl(avatarUrl);
+                    }
+                    teacherRepository.save(teacher);
+                    updatedCount++;
+                } else {
                     Teacher teacher = Teacher.builder()
                             .fullName(fullName)
                             .title(title)
                             .faculty(faculty)
                             .department(department)
+                            .avatarUrl(avatarUrl)
                             .build();
-                    teachers.add(teacher);
+                    teacherRepository.save(teacher);
+                    importedCount++;
                 }
             }
         }
 
-        if (!teachers.isEmpty()) {
-            teacherRepository.saveAll(teachers);
-        }
-
-        return teachers.size();
+        return new ImportResult(importedCount, updatedCount, failedRows);
     }
+
+    public record FailedRow(int row, String reason) {}
+
+    public record ImportResult(int importedCount, int updatedCount, List<FailedRow> failedRows) {}
 }

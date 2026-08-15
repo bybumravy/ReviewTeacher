@@ -1,0 +1,10 @@
+# Secrets
+.env
+
+# OS / editor
+.DS_Store
+Thumbs.db
+*.tmp
+*.swp
+.vscode/
+.idea/

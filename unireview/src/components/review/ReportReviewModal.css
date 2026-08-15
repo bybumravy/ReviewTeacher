@@ -1,0 +1,46 @@
+.report-modal {
+  text-align: center;
+}
+
+.report-modal-icon {
+  width: 64px;
+  height: 64px;
+  margin: 0 auto var(--space-lg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-xl);
+  background: var(--color-danger-light, var(--color-accent-light));
+  color: var(--color-danger, var(--color-accent));
+  font-size: 28px;
+}
+
+.report-modal-title {
+  font-size: var(--font-size-2xl);
+  font-weight: 800;
+  margin-bottom: var(--space-sm);
+}
+
+.report-modal-desc {
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-sm);
+  margin-bottom: var(--space-xl);
+  line-height: 1.6;
+}
+
+.report-modal-form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-lg);
+  text-align: left;
+}
+
+.report-modal-actions {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+}
+
+.report-modal-actions .btn-lg {
+  width: 100%;
+}

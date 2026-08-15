@@ -28,7 +28,7 @@ public class ModerationService {
     private final ResourceLoader resourceLoader;
     private final RestTemplate restTemplate;
 
-    @Value("${app.moderation.perspective-api-key:mock_key}")
+    @Value("${app.moderation.perspective-api-key:mock_perspective_key}")
     private String apiKey;
 
     @Value("${app.moderation.perspective-api-url:https://commentanalyzer.googleapis.com/v1alpha1/comments:analyze}")
@@ -92,7 +92,7 @@ public class ModerationService {
 
         // Layer 2: Google Perspective API (Mock or Live)
         try {
-            if ("mock_key".equals(apiKey) || apiKey.isBlank()) {
+            if ("mock_perspective_key".equals(apiKey) || apiKey.isBlank()) {
                 // If API key not set, default auto-approve (fail-open)
                 return new ModerationResult(ReviewStatus.APPROVED, BigDecimal.valueOf(0.1));
             }

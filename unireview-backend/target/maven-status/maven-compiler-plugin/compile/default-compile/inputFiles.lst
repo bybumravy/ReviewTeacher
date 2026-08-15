@@ -1,4 +1,5 @@
 D:\ReviewTeacher\unireview-backend\src\main\java\com\unireview\UniReviewApplication.java
+D:\ReviewTeacher\unireview-backend\src\main\java\com\unireview\util\IpHashUtil.java
 D:\ReviewTeacher\unireview-backend\src\main\java\com\unireview\service\ModerationService.java
 D:\ReviewTeacher\unireview-backend\src\main\java\com\unireview\entity\AdminUser.java
 D:\ReviewTeacher\unireview-backend\src\main\java\com\unireview\controller\GateController.java
@@ -34,6 +35,7 @@ D:\ReviewTeacher\unireview-backend\src\main\java\com\unireview\exception\Captcha
 D:\ReviewTeacher\unireview-backend\src\main\java\com\unireview\entity\ReviewReport.java
 D:\ReviewTeacher\unireview-backend\src\main\java\com\unireview\service\CaptchaService.java
 D:\ReviewTeacher\unireview-backend\src\main\java\com\unireview\exception\ResourceNotFoundException.java
+D:\ReviewTeacher\unireview-backend\src\main\java\com\unireview\dto\response\ReportResponse.java
 D:\ReviewTeacher\unireview-backend\src\main\java\com\unireview\dto\response\TeacherResponse.java
 D:\ReviewTeacher\unireview-backend\src\main\java\com\unireview\enums\ReportStatus.java
 D:\ReviewTeacher\unireview-backend\src\main\java\com\unireview\enums\Recommendation.java
@@ -44,6 +46,7 @@ D:\ReviewTeacher\unireview-backend\src\main\java\com\unireview\service\ReviewSer
 D:\ReviewTeacher\unireview-backend\src\main\java\com\unireview\service\TeacherService.java
 D:\ReviewTeacher\unireview-backend\src\main\java\com\unireview\enums\ReviewStatus.java
 D:\ReviewTeacher\unireview-backend\src\main\java\com\unireview\entity\UnlockedTeacher.java
+D:\ReviewTeacher\unireview-backend\src\main\java\com\unireview\exception\RateLimitExceededException.java
 D:\ReviewTeacher\unireview-backend\src\main\java\com\unireview\repository\ReviewerRepository.java
 D:\ReviewTeacher\unireview-backend\src\main\java\com\unireview\service\GateService.java
 D:\ReviewTeacher\unireview-backend\src\main\java\com\unireview\service\AdminService.java

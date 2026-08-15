@@ -14,8 +14,8 @@ import java.math.BigDecimal;
 public interface TeacherRepository extends JpaRepository<Teacher, Long> {
 
     @Query("SELECT t FROM Teacher t WHERE " +
-           "(:search IS NULL OR LOWER(t.fullName) LIKE LOWER(CONCAT('%', :search, '%')) OR LOWER(t.faculty) LIKE LOWER(CONCAT('%', :search, '%')) OR LOWER(t.department) LIKE LOWER(CONCAT('%', :search, '%'))) AND " +
-           "(:faculty IS NULL OR t.faculty = :faculty) AND " +
+           "(:search IS NULL OR LOWER(t.fullName) LIKE LOWER(CONCAT('%', CAST(:search AS string), '%')) OR LOWER(t.faculty) LIKE LOWER(CONCAT('%', CAST(:search AS string), '%')) OR LOWER(t.department) LIKE LOWER(CONCAT('%', CAST(:search AS string), '%'))) AND " +
+           "(:faculty IS NULL OR t.faculty = CAST(:faculty AS string)) AND " +
            "(:minRating IS NULL OR t.avgRating >= :minRating)")
     Page<Teacher> findByFilters(
             @Param("search") String search,
@@ -23,4 +23,6 @@ public interface TeacherRepository extends JpaRepository<Teacher, Long> {
             @Param("minRating") BigDecimal minRating,
             Pageable pageable
     );
+
+    java.util.Optional<Teacher> findByFullNameIgnoreCaseAndFacultyIgnoreCase(String fullName, String faculty);
 }

@@ -8,4 +8,5 @@ public class ReportRequest {
     @NotBlank(message = "Lý do báo cáo không được để trống")
     private String reason;
     private String description;
+    private String captchaToken;
 }
